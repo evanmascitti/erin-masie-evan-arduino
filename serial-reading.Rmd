@@ -1,0 +1,136 @@
+---
+title: "Serial reading with Python; data processing with R"
+date: '2021-04-22'
+output:
+  powerpoint_presentation:
+    reference_doc: serial-reading-template.pptx
+---
+
+```{r setup, include=F}
+knitr::opts_chunk$set(comment = "", fig.retina = 3)
+```
+
+# Writing to a file via USB 
+
+- Not as simple as it would seem 
+
+- Once working, minimizes data handling pipeline
+
+# Python solution
+
+- `pyserial` module and `csv` module 
+
+- `while` loop to maintain stream 
+
+
+# Python code 
+
+````python
+import serial
+import time
+import csv
+````
+````python
+ser = serial.Serial('COM4', 115200)
+ser.flushInput()
+````
+````python
+while True:
+    try:
+        ser_bytes = ser.readline()
+       
+        print(ser_bytes)
+        with open("test_data.csv","a") as f:
+            writer = csv.writer(f,delimiter=",")
+            writer.writerow([time.time(), ser_bytes])
+    except:
+        print("Keyboard Interrupt")
+        break
+````
+
+# Clean up with **tidyverse**
+
+```{r}
+# Read the csv file and specify column names since no header is present 
+
+library(magrittr)
+
+df <- readr::read_delim(file = './test_data.csv',
+                 col_names = c("read_time", "message"),
+                 delim = ",",
+                 col_types = 'dc')
+```
+
+# Clean up with **tidyverse**
+
+```{r}
+head(df, n = 10)
+```
+
+---
+
+# Clean up with **tidyverse**
+
+```{r}
+# parse and clean data 
+# employs a couple beefy regular expressions 
+df <- df %>% 
+  dplyr::mutate(
+    read_time = lubridate::as_datetime(read_time),
+    message = stringr::str_remove_all(message, pattern = "b'|\\\\r|\\\\n'")) %>%
+  dplyr::filter(
+    stringr::str_detect(message, "\\w{4}\\s\\w{4}\\s\\w{4}\\s\\w{4}" )) %>% 
+  dplyr::mutate(
+    message = stringr::str_remove(message, "\\s*UID\\sValue:\\s")) %>% 
+  dplyr::rename(card_id = message)
+```
+
+# Clean up with **tidyverse**
+
+:::::: {.columns}
+
+::: {.column}
+- `datetime` objects represent the number of seconds since beginning of Unix epoch (Jan 1, 1970 00:00 UTC)  
+
+
+- They are based on a double-type atomic vector:
+```{r}
+unclass(df$read_time)[1]
+```
+
+
+:::
+
+::: {.column}
+
+- exist in both Python and R
+
+- detection time limited to 1-s precision w/ Python `time.time()`
+
+
+:::
+
+::::::
+---
+
+
+```{r time-series, fig.asp=9/16, out.width='100%', echo=F}
+library(ggplot2)
+
+ggplot(df, aes(read_time, 1))+
+  geom_col(fill = 'firebrick', alpha = 1/4)+
+  scale_x_datetime('Detection time',
+                   labels = scales::label_date(format = "%r", tz = "America/New_York"), expand = expansion(mult = 0.12))+
+  theme_void()+
+  labs(title = 'Detection times of NFC RFID card')+
+  theme(
+    axis.line.x = element_line(),
+    axis.ticks.x = element_line(),
+    axis.text.x = element_text(hjust = 1)
+  )
+  
+  
+  
+
+```
+
