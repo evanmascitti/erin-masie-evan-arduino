@@ -24,7 +24,7 @@ while True:
         ser_bytes = ser.readline()
        
         print(ser_bytes)
-        with open("test_data.csv","a") as f:
+        with open("test_data2.csv","a") as f:
             writer = csv.writer(f,delimiter=",")
             writer.writerow([time.time(), ser_bytes])
     except:

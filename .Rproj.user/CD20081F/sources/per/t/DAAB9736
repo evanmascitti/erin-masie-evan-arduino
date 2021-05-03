@@ -1,6 +1,6 @@
 {
     "id": "DAAB9736",
-    "path": "C:/Users/evanm/OneDrive - The Pennsylvania State University/PSU2019-present/Classes/ecol-597-programming-for-ecologists/Arduino/Erin-Maisie-Evan-group-project/serial-reading.Rmd",
+    "path": "C:/Users/evanm/OneDrive - The Pennsylvania State University/PSU2019-present/Classes/ecol-597-programming-for-ecologists/Arduino/erin-masie-evan-arduino/serial-reading.Rmd",
     "project_path": "serial-reading.Rmd",
     "type": "r_markdown",
     "hash": "2618976993",
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "70,0",
-        "scrollLine": "10"
+        "cursorPosition": "134,0",
+        "scrollLine": "75"
     },
     "folds": "27|10|31|0|\n32|10|35|0|\n36|10|48|0|\n",
-    "lastKnownWriteTime": 1619533268,
+    "lastKnownWriteTime": 1619537470,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1619533268511,
+    "last_content_update": 1619537470661,
     "read_only": false,
     "read_only_alternatives": []
 }
